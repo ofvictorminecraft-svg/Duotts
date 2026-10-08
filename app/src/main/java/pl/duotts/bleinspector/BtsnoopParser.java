@@ -120,9 +120,6 @@ public final class BtsnoopParser {
             }
         } else if (code == 0x03 && raw.length >= 12 && (raw[3] & 255) == 0) {
             c.addressesByConnection.put(le16(raw, 4) & 0xfff, address(raw, 6));
-        } else if (code == 0x05 && raw.length >= 7) {
-            // Handle may be reused later, avoid attaching old device address.
-            c.addressesByConnection.remove(le16(raw, 4) & 0xfff);
         }
     }
     private static String address(byte[] b, int off) {

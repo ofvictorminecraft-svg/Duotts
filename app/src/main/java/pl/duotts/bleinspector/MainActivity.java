@@ -315,6 +315,7 @@ public class MainActivity extends Activity {
                     closeGatt(g);
                 }
                 private void failGatt(String text, BluetoothGatt g) {
+                    if (gatt != g) return; // ignore the expected disconnect after discovery
                     runOnUiThread(() -> { services.setText(text); setStatus("GATT: " + text); });
                     closeGatt(g);
                 }

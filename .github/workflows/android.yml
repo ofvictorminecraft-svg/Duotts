@@ -27,6 +27,11 @@ jobs:
           test -x "$SDKMANAGER"
           yes | "$SDKMANAGER" --sdk_root="$ANDROID_HOME" --licenses >/dev/null
           "$SDKMANAGER" --sdk_root="$ANDROID_HOME" "platforms;android-35" "build-tools;35.0.0"
+      - name: Smoke-test ATT decoder
+        run: |
+          mkdir -p /tmp/duotts-test
+          javac -d /tmp/duotts-test app/src/main/java/pl/duotts/bleinspector/BtsnoopParser.java tools/pl/duotts/bleinspector/ParserSmokeTest.java
+          java -cp /tmp/duotts-test pl.duotts.bleinspector.ParserSmokeTest
       - name: Build debug APK
         run: gradle --no-daemon :app:assembleDebug
       - name: Verify APK exists
