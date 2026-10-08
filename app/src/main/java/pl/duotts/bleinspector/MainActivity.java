@@ -393,14 +393,19 @@ public class MainActivity extends Activity {
                 ZipEntry entry;
                 while ((entry = zip.getNextEntry()) != null) {
                     String entryName = entry.getName().toLowerCase(Locale.US);
-                    if (!entry.isDirectory() && (entryName.contains("btsnoop") && (entryName.endsWith(".log") || entryName.endsWith(".cfa")))) {
-                        return BtsnoopParser.parse(zip);
+                    if (!entry.isDirectory() && (entryName.contains("btsnoop") || entryName.contains("btsnooz"))
+                            && (entryName.endsWith(".log") || entryName.endsWith(".log.last") || entryName.endsWith(".cfa"))) {
+                        BtsnoopParser.Capture capture = BtsnoopParser.parse(zip);
+                        if (capture.packets == 0) throw new IOException("Dziennik Bluetooth jest pusty (tylko nagłówek). Uruchom ponownie telefon po włączeniu HCI snoop i nagraj nową sesję.");
+                        return capture;
                     }
                     zip.closeEntry();
                 }
                 throw new IOException("ZIP nie zawiera btsnoop_hci.log. W tym raporcie nie ma logu Bluetooth HCI.");
             }
-            return BtsnoopParser.parse(input);
+            BtsnoopParser.Capture capture = BtsnoopParser.parse(input);
+            if (capture.packets == 0) throw new IOException("Dziennik Bluetooth jest pusty (tylko nagłówek). Uruchom ponownie telefon po włączeniu HCI snoop i nagraj nową sesję.");
+            return capture;
         }
     }
     private String summary(String tag, BtsnoopParser.Capture c) {
